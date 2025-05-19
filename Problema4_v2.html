@@ -56,11 +56,10 @@
           sortState = {};
           sortState[rowIndex] = direction;
 
-          // Resetă săgețile
+
           $tbody.find('td.header').removeClass('sorted-asc sorted-desc');
           $headerCell.addClass(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
 
-          // Extragem coloanele (doar valorile)
           const indices = [...Array(colCount).keys()].map(i => i + 1);
 
           indices.sort((a, b) => {
@@ -74,7 +73,6 @@
             return 0;
           });
 
-          // Rearanjăm coloanele pe toate rândurile (fără să distrugem <td>)
           $tbody.find('tr').each(function () {
             const $cells = $(this).find('td');
             const fixedCell = $cells.eq(0);
