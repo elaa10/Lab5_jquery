@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Problema 4 - vertical jQuery</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      margin: 20px;
+    }
+    td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+    }
+    td.header {
+      font-weight: bold;
+      background-color: #f0f0f0;
+    }
+    td.sorted-asc::after {
+      content: " ▲";
+    }
+    td.sorted-desc::after {
+      content: " ▼";
+    }
+  </style>
+</head>
+<body>
+
+<table id="tabel-vertical">
+  <tbody>
+  <tr><td class="header">Fruct</td><td>Mere</td><td>Pere</td><td>Banane</td><td>Smochine</td></tr>
+  <tr><td class="header">Pret</td><td>3</td><td>4</td><td>2</td><td>4</td></tr>
+  <tr><td class="header">Cantitate</td><td>8</td><td>6</td><td>12</td><td>13</td></tr>
+  </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    const $table = $('#tabel-vertical');
+    const $tbody = $table.find('tbody');
+    let sortState = {};
+
+    const rowCount = $tbody.find('tr').length;
+    const colCount = $tbody.find('tr').first().find('td').length - 1;
+
+    function attachClickEvents() {
+      $tbody.find('tr').each(function (rowIndex) {
+        const $headerCell = $(this).find('td').first();
+
+        $headerCell.off('click').on('click', function () {
+          const direction = sortState[rowIndex] === 'asc' ? 'desc' : 'asc';
+          sortState = {};
+          sortState[rowIndex] = direction;
+
+          // Resetă săgețile
+          $tbody.find('td.header').removeClass('sorted-asc sorted-desc');
+          $headerCell.addClass(direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+          // Extragem coloanele (doar valorile)
+          const indices = [...Array(colCount).keys()].map(i => i + 1);
+
+          indices.sort((a, b) => {
+            let valA = $tbody.find('tr').eq(rowIndex).find('td').eq(a).text();
+            let valB = $tbody.find('tr').eq(rowIndex).find('td').eq(b).text();
+            valA = isNaN(valA) ? valA.toLowerCase() : Number(valA);
+            valB = isNaN(valB) ? valB.toLowerCase() : Number(valB);
+
+            if (valA < valB) return direction === 'asc' ? -1 : 1;
+            if (valA > valB) return direction === 'asc' ? 1 : -1;
+            return 0;
+          });
+
+          // Rearanjăm coloanele pe toate rândurile (fără să distrugem <td>)
+          $tbody.find('tr').each(function () {
+            const $cells = $(this).find('td');
+            const fixedCell = $cells.eq(0);
+            const newOrder = [fixedCell.get(0)];
+
+            indices.forEach(i => {
+              newOrder.push($cells.get(i));
+            });
+
+            $(this).append(newOrder);
+          });
+        });
+      });
+    }
+
+    attachClickEvents(); // inițial
+  });
+</script>
+
+</body>
+</html>

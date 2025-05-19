@@ -1,0 +1,187 @@
+<!-- 5. Intr-o pagina HTML exista o lista descrisa cu ajutorul tagului <ol>.
+ Fiecare element din lista (<li>) contine o imagine (<img>), si un link (<a>).
+ Elemente listei, mai putin primul dintre ele, nu sunt vizibile initial (se poate folosi in acest sens CSS).
+ Afisarea unui element din lista presupune afisarea imaginii si a textului ca link peste imagine
+ (a se vedea ca exemplu carouselul din pagina facultatii). Dupa n secunde printr-un efect de tranzitie va fi afisat urmatorul
+ element din lista. Se vor implementa si doua butoane Next si Previous care vor permite afisarea elementelor urmatoare
+ sau anterioare fara a se astepta trecerea celor n secunde. -->
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Problema 5 - jQuery Carousel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: white;
+      color: black;
+      margin: 0;
+      padding: 40px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .carousel-container {
+      position: relative;
+      width: 80%;
+      max-width: 600px;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      background: white;
+    }
+
+    #image-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      position: relative;
+    }
+
+    #image-list li {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    #image-list li.active {
+      display: block;
+    }
+
+    #image-list img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 15px;
+    }
+
+    #image-list a {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      font-size: 1.2rem;
+      border-radius: 5px;
+    }
+
+    .carousel-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 2;
+      border-radius: 5px;
+    }
+
+    #previous-button {
+      left: 10px;
+    }
+
+    #next-button {
+      right: 10px;
+    }
+
+    .carousel-button:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+  </style>
+</head>
+
+<body>
+<div class="carousel-container">
+  <ol id="image-list">
+    <li class="active">
+      <img src="images5/image1.jpeg" alt="Image 1" />
+      <a href="https://ro.pinterest.com/alexandraisabela04/pictura/">Link Pinterest</a>
+    </li>
+    <li>
+      <img src="images5/image2.jpeg" alt="Image 2" />
+      <a href="https://ro.pinterest.com/alexandraisabela04/pictura/">Link Pinterest</a>
+    </li>
+    <li>
+      <img src="images5/image3.jpeg" alt="Image 3" />
+      <a href="https://ro.pinterest.com/alexandraisabela04/pictura/">Link Pinterest</a>
+    </li>
+    <li>
+      <img src="images5/image4.jpeg" alt="Image 4" />
+      <a href="https://ro.pinterest.com/alexandraisabela04/pictura/">Link Pinterest</a>
+    </li>
+    <li>
+      <img src="images5/image5.jpeg" alt="Image 5" />
+      <a href="https://ro.pinterest.com/alexandraisabela04/pictura/">Link Pinterest</a>
+    </li>
+  </ol>
+
+  <button class="carousel-button" id="previous-button">⟨</button>
+  <button class="carousel-button" id="next-button">⟩</button>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    const $items = $('#image-list li');
+    let currentIndex = 0;
+    let intervalId;
+
+    function showSlide(index) {
+      $items.removeClass('active');
+      $items.eq(index).addClass('active');
+      currentIndex = index;
+    }
+
+    function nextSlide() {
+      const nextIndex = (currentIndex + 1) % $items.length;
+      showSlide(nextIndex);
+    }
+
+    function previousSlide() {
+      const prevIndex = (currentIndex - 1 + $items.length) % $items.length;
+      showSlide(prevIndex);
+    }
+
+    function startInterval() {
+      intervalId = setInterval(nextSlide, 3000);
+    }
+
+    function restartInterval() {
+      clearInterval(intervalId);
+      startInterval();
+    }
+
+    $('#next-button').on('click', function () {
+      nextSlide();
+      restartInterval();
+    });
+
+    $('#previous-button').on('click', function () {
+      previousSlide();
+      restartInterval();
+    });
+
+    startInterval();
+  });
+</script>
+</body>
+</html>
+

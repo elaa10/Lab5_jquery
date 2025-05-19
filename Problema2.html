@@ -1,0 +1,162 @@
+<!-- 2. Un formular web va permite unui utilizator sa isi introduca numele, data nasterii, varsta si adresa de e-mail.
+ La apasarea unui buton “Trimite” se vor valida toate aceste campuri daca sunt completate si daca sunt completate corect.
+ Daca da, se va afisa un mesaj “Datele sunt completate corect”, altfel,
+ se va afisa un mesaj de genul “Campurile nume si varsta nu sunt completate corect”,
+ aceste campuri fiind “incercuite” intr-o bordura rosie. -->
+
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Problema 2 - jQuery</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 40px;
+            background-color: lavender;
+        }
+        form {
+            max-width: 320px;
+            margin: auto;
+        }
+        .camp-inserare {
+            margin-bottom: 20px;
+        }
+        .camp-inserare label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .camp-inserare input {
+            padding: 8px;
+            width: 100%;
+            font-size: 16px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: mediumpurple;
+        }
+    </style>
+</head>
+<body>
+<form>
+    <div class="camp-inserare">
+        <label>Nume complet</label><input class="text" id="nume" required />
+    </div>
+
+    <div class="camp-inserare">
+        <label>Data nasterii</label><input class="text" id="birth" type="date" required />
+    </div>
+
+    <div class="camp-inserare">
+        <label>Varsta</label><input class="text" id="age" readonly />
+    </div>
+
+    <div class="camp-inserare">
+        <label>Email</label><input class="text" id="email" type="email" required />
+    </div>
+
+    <button id="btn" class="btn" type="button">Trimite</button>
+</form>
+
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        function nameValidation(name) {
+            if (name === '') return false;
+            const regex = /^[a-zA-Z]+ [a-zA-Z]+$/;
+            return regex.test(name);
+        }
+
+        function birthValidation(birth) {
+            if (birth === '') return false;
+            return !isNaN(Date.parse(birth)) && new Date(birth) < new Date();
+        }
+
+        function ageValidation(age) {
+            return age !== '' && age <= 120;
+        }
+
+        function emailValidation(email) {
+            if (email === '') return false;
+            const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            return regex.test(email);
+        }
+
+        function calculateAge(dateString) {
+            const birthDate = new Date(dateString);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
+
+        $('#birth').on('change', function () {
+            const val = $(this).val();
+            if (birthValidation(val)) {
+                const age = calculateAge(val);
+                $('#age').val(age);
+            } else {
+                $('#age').val('');
+            }
+        });
+
+        $('#btn').on('click', function () {
+            const myName = $('#nume').val();
+            const birthdate = $('#birth').val();
+            const age = $('#age').val();
+            const email = $('#email').val();
+            let error = '';
+
+            // Validări
+            if (!nameValidation(myName)) {
+                error += 'Numele introdus nu este valid!\n';
+                $('#nume').css('border', '2px solid red');
+            } else {
+                $('#nume').css('border', '2px solid #ccc');
+            }
+
+            if (!birthValidation(birthdate)) {
+                error += 'Data nasterii nu este valida!\n';
+                $('#birth').css('border', '2px solid red');
+            } else {
+                $('#birth').css('border', '2px solid #ccc');
+            }
+
+            if (!ageValidation(age)) {
+                error += 'Varsta nu este valida!\n';
+                $('#age').css('border', '2px solid red');
+            } else {
+                $('#age').css('border', '2px solid #ccc');
+            }
+
+            if (!emailValidation(email)) {
+                error += 'Adresa de email nu este valida!\n';
+                $('#email').css('border', '2px solid red');
+            } else {
+                $('#email').css('border', '2px solid #ccc');
+            }
+
+            if (error) {
+                alert(error);
+            } else {
+                alert('Datele au fost trimise cu succes!');
+                $('input.text').val('').css('border', '2px solid #ccc');
+            }
+        });
+    });
+</script>
+</body>
+</html>

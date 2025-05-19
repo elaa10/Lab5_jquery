@@ -1,0 +1,105 @@
+<!--  3. O matrice cu numar par de elemente, reprezentata vizual sub forma unui tabel, contine perechi de numere
+initial ascunse. Daca utilizatorul da click pe doua celule ale tabelului ce contin numere egale acestea vor fi afisate
+si vor ramane afisate. Daca numerele continute in cele doua celule nu sunt egale, vor fi ascunse din nou dupa
+ un numar de 2, 3 secunde. Jocul se termina cand toate perechile de numere au fost ghicite.
+ Dupa prima implementare a jocului, se va crea o noua versiune in care numerele vor fi inlocuite cu imagini (
+ ce contin fructe spre exemplu, sau “profi” de pe pagina facultatii).
+  Problema mai este recunoscuta si sub numele de Memory Game. -->
+
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Problema 3 - numere</title>
+  <style>
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+    td {
+      width: 120px;
+      height: 120px;
+      border: 2px solid white;
+      text-align: center;
+      font-size: 40px;
+      background-color: #a293b4;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<table id="memory_game">
+</table>
+
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    const matrix = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8];
+    matrix.sort(() => 0.5 - Math.random());
+
+    let first = null;
+    let second = null;
+    let found = 0;
+
+    function createBoard() {
+      for (let i = 0; i < 4; i++) {
+        const $row = $('<tr></tr>');
+        for (let j = 0; j < 4; j++) {
+          const index = i * 4 + j;
+          const $td = $('<td></td>').attr('data-index', index);
+          $row.append($td);
+        }
+        $('#memory_game').append($row);
+      }
+    }
+
+    function resetSelections() {
+      first = null;
+      second = null;
+    }
+
+    $('#memory_game').on('click', 'td', function () {
+      const $cell = $(this);
+
+      if ($cell.text() !== "" || second) return;
+
+      const index = $cell.data('index');
+      $cell.text(matrix[index]);
+
+      if (!first) {
+        first = $cell;
+        return;
+      }
+
+      second = $cell;
+
+      const val1 = matrix[first.data('index')];
+      const val2 = matrix[second.data('index')];
+
+      if (val1 === val2) {
+        first.off('click');
+        second.off('click');
+        resetSelections();
+        found++;
+
+        if (found === 8) {
+          alert("Ai câștigat!");
+        }
+      } else {
+        setTimeout(() => {
+          first.text('');
+          second.text('');
+          resetSelections();
+        }, 1000);
+      }
+    });
+
+    createBoard();
+  });
+</script>
+</body>
+</html>
